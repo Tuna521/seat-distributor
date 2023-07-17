@@ -14,12 +14,13 @@ customer_info_reader = reader(customer_info_file)
 customer_info_header = next(customer_info_reader)
 num_customer_header = len(customer_info_header)
 
-# find first name and last name column
+# Find first name and last name column
 i_name = -1
 i_surname = -1
 i_quantity = -1
 i = 0
 
+# Get needed column and throw error if non-existent
 while i < num_customer_header:
     if (customer_info_header[i] == "First Name"):
         i_name = i
@@ -54,6 +55,3 @@ for customer_info in customer_info_reader:
         if (cur_seat_num > seat_range[cur_row_i][1]):
             cur_row_i += 1
             cur_seat_num = seat_row[cur_row_i][0]
-
-# check whehter the number of ticket split is the same
-# len(inputpdf.pages)
