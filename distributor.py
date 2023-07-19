@@ -5,6 +5,13 @@ from csv import reader
 seat_row = ["P", "Q"]
 seat_range = [(16, 25), (17, 21)]
 
+# bit hash map to map thee thing like the os??
+# seat list is seat range expanded basically
+# TODO unpack the tuple into its own thing
+# seat_list = [range(a, b) for (a, b) in seat_range]
+# print(seat_list)
+      
+
 # Open the pdf file of the collective tickets
 inputpdf = PdfReader(open("mamma-mia.pdf", "rb"))
 
