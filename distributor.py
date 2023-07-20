@@ -8,9 +8,13 @@ seat_range = [(16, 25), (17, 21)]
 # bit hash map to map thee thing like the os??
 # seat list is seat range expanded basically
 # TODO unpack the tuple into its own thing
-# seat_list = [range(a, b) for (a, b) in seat_range]
-# print(seat_list)
-      
+seat_range_all = []
+for (start, finish) in seat_range:
+    seat_range_each = []
+    for i in range(start, finish + 1):
+        seat_range_each += [i]
+    seat_range_all.append(seat_range_each) 
+# print(seat_range_all)
 
 # Open the pdf file of the collective tickets
 inputpdf = PdfReader(open("mamma-mia.pdf", "rb"))
