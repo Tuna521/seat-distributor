@@ -1,5 +1,6 @@
 from PyPDF2 import PdfWriter, PdfReader
 from csv import reader
+from operator import itemgetter
 
 # The number of rows and seats [included] (ex P16-25, Q17-Q21)
 seat_row = ["P", "Q"]
@@ -12,8 +13,10 @@ seat_range_all = [[i for i in range(start, finish + 1)] for (start, finish) in s
 inputpdf = PdfReader(open("mamma-mia.pdf", "rb"))
 
 # Open the csv to read in each user
-customer_info_file = open("Purchase_Summary_Dummy.csv")
+customer_info_file = open("Purchase_Summary_Dummy.csv")  #  append ",delimiter=',')" if needed
 customer_info_reader = reader(customer_info_file)
+
+# get the header of the csv file
 customer_info_header = next(customer_info_reader)
 num_customer_header = len(customer_info_header)
 
@@ -37,6 +40,9 @@ if i_name == -1:
     raise Exception("csv does not contain \"First Name\" column")
 if i_quantity == -1:
     raise Exception("csv does not contain \"Quantity\" column")
+
+# Sort the table by number of tickets ordered
+customer_info_reader = sorted(customer_info_reader, key=itemgetter(i_quantity), reverse=True)
 
 # Assign pdf and attach the name at the end
 # (DOESN'T ACCOUNT THAT TWO TICKETS NEXT TO EACH OTHER (yet))
