@@ -8,6 +8,7 @@ seat_range = [(16, 25), (17, 21)]
 
 # Expand seat range into its individual cell
 seat_range_all = [[i for i in range(start, finish + 1)] for (start, finish) in seat_range]
+seat_taken = [[False for _ in range(start, finish + 1)] for (start, finish) in seat_range]
 
 # Open the pdf file of the collective tickets
 inputpdf = PdfReader(open("mamma-mia.pdf", "rb"))
@@ -46,21 +47,46 @@ customer_info_reader = sorted(customer_info_reader, key=itemgetter(i_quantity), 
 
 # Assign pdf and attach the name at the end
 # (DOESN'T ACCOUNT THAT TWO TICKETS NEXT TO EACH OTHER (yet))
-i = 0
 
-cur_row_i = 0
-cur_seat_num = seat_range[cur_row_i][0]
+cur_row = 0
 for customer_info in customer_info_reader:
-    print(i)
-    for n in range(int(customer_info[i_quantity])):
-        output = PdfWriter()
-        output.add_page(inputpdf.pages[i])
-        with open("document-%s%s-%s.pdf" % (seat_row[cur_row_i], cur_seat_num, customer_info[i_name]), "wb") as outputStream:
-            output.write(outputStream)
-        i += 1
+    print(customer_info)
+    if int(customer_info[i_quantity]) > 1:
+        # check that the row doesnt have 3 at then end,
+        # if it does, try allocating a block in next row and do the check again
+        # if we got to the last row and cannot do so, go back to the first row and give the continous seats
+        # if there is only one seat, go to next row
+        print("TODO")
+    else:
+        # just allocate first free
+        # Assumes that there is enough tickets for number
+        first_occurance = seat_taken[cur_row].index(False)
+        while (first_occurance == -1):
+            cur_row += 1
+            first_occurance = seat_taken[cur_row].index(False)
+            
+        page_num = sum([seat_range[i][1] - seat_range[i][0] + 1 for i in range(cur_row)]) + first_occurance
         
-        # Get next seat
-        cur_seat_num += 1
-        if (cur_seat_num > seat_range[cur_row_i][1]):
-            cur_row_i += 1
-            cur_seat_num = seat_row[cur_row_i][0]
+        output = PdfWriter()
+        output.add_page(inputpdf.pages[page_num])
+        with open("document-%s%s-%s.pdf" % (seat_row[cur_row], seat_range_all[cur_row][first_occurance], customer_info[i_name]), "wb") as outputStream:
+            output.write(outputStream)
+
+# i = 0
+
+# cur_row_i = 0
+# cur_seat_num = seat_range[cur_row_i][0]
+# for customer_info in customer_info_reader:
+#     print(i)
+#     for n in range(int(customer_info[i_quantity])):
+#         output = PdfWriter()
+#         output.add_page(inputpdf.pages[i])
+#         with open("document-%s%s-%s.pdf" % (seat_row[cur_row_i], cur_seat_num, customer_info[i_name]), "wb") as outputStream:
+#             output.write(outputStream)
+#         i += 1
+        
+#         # Get next seat
+#         cur_seat_num += 1
+#         if (cur_seat_num > seat_range[cur_row_i][1]):
+#             cur_row_i += 1
+#             cur_seat_num = seat_row[cur_row_i][0]
