@@ -56,14 +56,21 @@ for customer_info in customer_info_reader:
         # if it does, try allocating a block in next row and do the check again
         # if we got to the last row and cannot do so, go back to the first row and give the continous seats
         # if there is only one seat, go to next row
+        
         print("TODO")
     else:
         # just allocate first free
-        # Assumes that there is enough tickets for number
+        # Throw exception if cannot find a free seat
         first_occurance = seat_taken[cur_row].index(False)
+        init_row = cur_row
         while (first_occurance == -1):
             cur_row += 1
             first_occurance = seat_taken[cur_row].index(False)
+            if (cur_row == len(seat_row)): 
+                cur_row = 0
+            if (cur_row == init_row):
+                raise Exception("There is no more seats")
+                
             
         page_num = sum([seat_range[i][1] - seat_range[i][0] + 1 for i in range(cur_row)]) + first_occurance
         
