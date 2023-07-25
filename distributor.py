@@ -51,17 +51,39 @@ customer_info_reader = sorted(customer_info_reader, key=itemgetter(i_quantity), 
 cur_row = 0
 for customer_info in customer_info_reader:
     print(customer_info)
+    first_occurance = seat_taken[cur_row].index(False)
     if int(customer_info[i_quantity]) > 1:
         # check that the row doesnt have 3 at then end,
         # if it does, try allocating a block in next row and do the check again
         # if we got to the last row and cannot do so, go back to the first row and give the continous seats
         # if there is only one seat, go to next row
+        while (first_occurance >= len(seat_taken[cur_row]) - 3):
+            cur_row += 1
+            first_occurance = seat_taken[cur_row].index(False)
+            if (cur_row == len(seat_row)):
+                cur_row = 0
+            if (cur_row == init_row):
+                # allocate any as long as there is two next to each other
+                if int(customer_info[i_quantity]) >= len(seat_taken[cur_row]) - first_occurance:
+                    raise Exception("There is no more seats!")
         
+        page_num = sum([seat_range[i][1] - seat_range[i][0] + 1 for i in range(cur_row)]) + first_occurance
+        
+        for i in range(int(customer_info[i_quantity])):
+            output = PdfWriter()
+            output.add_page(inputpdf.pages[page_num])
+            with open("document-%s%s-%s.pdf" % (seat_row[cur_row], seat_range_all[cur_row][first_occurance], customer_info[i_name]), "wb") as outputStream:
+                output.write(outputStream)
+                
+            seat_taken[cur_row][first_occurance] = True
+            first_occurance += 1
+            page_num += 1
+                
+            
         print("TODO")
     else:
         # just allocate first free
         # Throw exception if cannot find a free seat
-        first_occurance = seat_taken[cur_row].index(False)
         init_row = cur_row
         while (first_occurance == -1):
             cur_row += 1
@@ -78,6 +100,8 @@ for customer_info in customer_info_reader:
         output.add_page(inputpdf.pages[page_num])
         with open("document-%s%s-%s.pdf" % (seat_row[cur_row], seat_range_all[cur_row][first_occurance], customer_info[i_name]), "wb") as outputStream:
             output.write(outputStream)
+            
+        seat_taken[cur_row][first_occurance] = True
 
 # i = 0
 
