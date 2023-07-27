@@ -79,8 +79,6 @@ for customer_info in customer_info_reader:
             first_occurance += 1
             page_num += 1
                 
-            
-        print("TODO")
     else:
         # just allocate first free
         # Throw exception if cannot find a free seat
