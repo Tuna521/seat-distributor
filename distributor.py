@@ -31,8 +31,6 @@ class Distributor:
     # Sort the table by number of tickets ordered
     self.csv_reader = sorted(self.csv_reader, key=itemgetter(self.i_quantity), reverse=True)
     
-    self.distribute_tickets()
-    
     
   def get_header_index(self):
     """ 
@@ -157,4 +155,12 @@ class Distributor:
         print("todo")
         
         
-            
+           
+           
+seat_row = ["P", "Q"]
+seat_range = [(16, 25), (17, 21)]
+path_to_tickets = "mamma-mia.pdf"
+path_to_csv = "Purchase_Summary_Mamma_Mia.csv"
+ 
+distributor = Distributor(seat_row, seat_range, path_to_tickets, path_to_csv)
+distributor.distribute_tickets()
