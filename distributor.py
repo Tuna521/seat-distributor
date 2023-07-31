@@ -111,6 +111,18 @@ class Distributor:
     return sum([self.number_of_seats_in_row(r) for r in range(row)]) + seat
     
     
+    
+  def create_pdf_ticket(self, row, first_free, customer):
+    page_num = self.get_page_num(row, first_free)
+          
+    output = PdfWriter()
+    output.add_page(self.ticket_file.pages[page_num])
+    with open("document-%s%s-%s.pdf" % (self.seat_row[row], self.get_lowest_seat_num(row) + first_free, customer[self.i_name]), "wb") as outputStream:
+        output.write(outputStream)
+        
+    self.seat_taken[row][first_free] = True
+    
+    
   def distribute_tickets(self, ones=3):
     """
     Distributes the seats, so that people that bought one tickets sit next to each other if they can.
@@ -136,19 +148,11 @@ class Distributor:
           if (cur_row == init_row):
               if quantity >= self.number_of_seats_in_row(cur_row) - first_free:
                   raise Exception("There is no more seats!")
-      # ----------------------------------------
-        
-        page_num = self.get_page_num(cur_row, first_free)
+      # ---------------------------------------
         
         for i in range(quantity):
-          output = PdfWriter()
-          output.add_page(self.ticket_file.pages[page_num])
-          with open("document-%s%s-%s.pdf" % (self.seat_row[cur_row], self.get_lowest_seat_num(cur_row) + first_free, customer[self.i_name]), "wb") as outputStream:
-              output.write(outputStream)
-              
-          self.seat_taken[cur_row][first_occurance] = True
-          first_occurance += 1
-          page_num += 1
+          self.create_pdf_ticket(cur_row, first_free, customer)
+          first_free += 1
         
       else:
         #  case when tickets is one
