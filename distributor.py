@@ -112,7 +112,26 @@ class Distributor:
     
     
     
+  def find_first_free_seat(self, init_row, ones, quantity = 1) -> (int, int):
+    """ Returns row and index """
+    first_free = self.first_free_seat_in_row(cur_row)
+    if quantity > 1:
+        # case when ticket more than one
+        while first_free > self.number_of_seats_in_row(cur_row) - ones:
+          cur_row += 1
+          first_free = self.first_free_seat_in_row(cur_row)
+          
+          if (cur_row == len(self.seat_row)):
+              cur_row = 0
+          if (cur_row == init_row):
+              if quantity >= self.number_of_seats_in_row(cur_row) - first_free:
+                  raise Exception("There is no more seats!")
+    
   def create_pdf_ticket(self, row, first_free, customer):
+    """
+    Creates the individual ticket for the given row, index, and name
+    """
+    
     page_num = self.get_page_num(row, first_free)
           
     output = PdfWriter()
@@ -133,9 +152,9 @@ class Distributor:
     for customer in self.csv_reader:
       
       init_row = cur_row
-      first_free = self.first_free_seat_in_row(cur_row)
       quantity = int(customer[self.i_quantity])
       
+      first_free = self.first_free_seat_in_row(cur_row)
       # Refactor into its own function ----------
       if quantity > 1:
         # case when ticket more than one
@@ -150,6 +169,7 @@ class Distributor:
                   raise Exception("There is no more seats!")
       # ---------------------------------------
         
+      if quantity > 1:
         for i in range(quantity):
           self.create_pdf_ticket(cur_row, first_free, customer)
           first_free += 1
