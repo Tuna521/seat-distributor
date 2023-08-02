@@ -23,8 +23,8 @@ class Distributor:
     
     self.ticket_file = PdfReader(open(path_to_tickets, "rb"))
 
-    csv_file = open(path_to_csv, delimiter = csv_delimiter)
-    self.csv_reader = reader(csv_file)
+    csv_file = open(path_to_csv)
+    self.csv_reader = reader(csv_file, delimiter =csv_delimiter)
     
     (self.i_name, self.i_surname, self.i_quantity) = self.get_header_index()
     
@@ -126,6 +126,7 @@ class Distributor:
           if (cur_row == init_row):
               if quantity >= self.number_of_seats_in_row(cur_row) - first_free:
                   raise Exception("There is no more seats!")
+    return (cur_row, first_free)
     
   def create_pdf_ticket(self, row, first_free, customer):
     """
@@ -184,7 +185,7 @@ class Distributor:
 seat_row = ["P", "Q"]
 seat_range = [(16, 25), (17, 21)]
 path_to_tickets = "mamma-mia.pdf"
-path_to_csv = "Purchase_Summary_Mamma_Mia.csv"
+path_to_csv = "Purchase_Product_Mamma_Mia.csv"
  
 distributor = Distributor(seat_row, seat_range, path_to_tickets, path_to_csv)
 distributor.distribute_tickets()

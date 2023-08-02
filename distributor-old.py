@@ -4,7 +4,7 @@ from operator import itemgetter
 
 # The number of rows and seats [included] (ex P16-25, Q17-Q21)
 seat_row = ["P", "Q"]
-seat_range = [(16, 25), (17, 21)]
+seat_range = [(16, 24), (17, 21)]
 
 # Expand seat range into its individual cell
 seat_range_all = [[i for i in range(start, finish + 1)] for (start, finish) in seat_range]
@@ -14,7 +14,7 @@ seat_taken = [[False for _ in range(start, finish + 1)] for (start, finish) in s
 inputpdf = PdfReader(open("mamma-mia.pdf", "rb"))
 
 # Open the csv to read in each user
-customer_info_file = open("Purchase_Summary_Dummy.csv")  #  append ",delimiter=',')" if needed
+customer_info_file = open("Purchase_Product_Mamma_Mia.csv")  #  append ",delimiter=',')" if needed
 customer_info_reader = reader(customer_info_file)
 
 # get the header of the csv file
@@ -51,6 +51,7 @@ customer_info_reader = sorted(customer_info_reader, key=itemgetter(i_quantity), 
 cur_row = 0
 for customer_info in customer_info_reader:
     print(customer_info)
+    init_row = cur_row
     first_occurance = seat_taken[cur_row].index(False)
     if int(customer_info[i_quantity]) > 1:
         # check that the row doesnt have 3 at then end,
@@ -62,6 +63,9 @@ for customer_info in customer_info_reader:
             first_occurance = seat_taken[cur_row].index(False)
             if (cur_row == len(seat_row)):
                 cur_row = 0
+                
+            # TODO: Bug where it will be index error if you canot find 3 in row
+            
             if (cur_row == init_row):
                 # allocate any as long as there is two next to each other
                 if int(customer_info[i_quantity]) >= len(seat_taken[cur_row]) - first_occurance:
@@ -82,7 +86,8 @@ for customer_info in customer_info_reader:
     else:
         # just allocate first free
         # Throw exception if cannot find a free seat
-        init_row = cur_row
+        # TODO: return to the first one if needed
+        init_row = seat_row[0]
         while (first_occurance == -1):
             cur_row += 1
             first_occurance = seat_taken[cur_row].index(False)
@@ -101,6 +106,7 @@ for customer_info in customer_info_reader:
             
         seat_taken[cur_row][first_occurance] = True
 
+    print(seat_taken)
 # i = 0
 
 # cur_row_i = 0
