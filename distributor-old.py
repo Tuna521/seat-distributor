@@ -53,16 +53,31 @@ for customer_info in customer_info_reader:
     print(customer_info)
     init_row = cur_row
     first_occurance = seat_taken[cur_row].index(False)
+    quantity = int(customer_info[i_quantity])
+    
+    can_allocate = True
+    found = False
     if int(customer_info[i_quantity]) > 1:
         # check that the row doesnt have 3 at then end,
         # if it does, try allocating a block in next row and do the check again
         # if we got to the last row and cannot do so, go back to the first row and give the continous seats
         # if there is only one seat, go to next row
-        while (first_occurance >= len(seat_taken[cur_row]) - 3):
-            cur_row += 1
+        while not found:
+        
+        # (first_occurance >= len(seat_taken[cur_row]) - 3 and can_allocate) or (first_occurance >= len(seat_taken[cur_row]) - quantity and not can_allocate):
+ 
             first_occurance = seat_taken[cur_row].index(False)
-            if (cur_row == len(seat_row)):
-                cur_row = 0
+            
+            if (can_allocate and first_occurance < len(seat_taken[cur_row]) - 3) or (not can_allocate and first_occurance < len(seat_taken[cur_row]) - quantity):
+                found = True
+            
+            if (first_occurance == -1 or (can_allocate and first_occurance >= len(seat_taken[cur_row]) - 3)):
+                if (cur_row == len(seat_row)):
+                    cur_row = 0
+                    can_allocate = False
+                else:
+                    cur_row += 1
+                
                 
             # TODO: Bug where it will be index error if you canot find 3 in row
             
@@ -105,8 +120,6 @@ for customer_info in customer_info_reader:
             output.write(outputStream)
             
         seat_taken[cur_row][first_occurance] = True
-
-    print(seat_taken)
 # i = 0
 
 # cur_row_i = 0
