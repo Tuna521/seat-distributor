@@ -72,17 +72,18 @@ class Distributor:
     Returns first free seat number index in that row (ex returns 2 for seat 22 for range (20-25)).
       
       :param int row: Index of the row (corresponding in seat_row)
-      :return: index of first free seat in row
+      :return: index of first free seat in row, if none return -1
       :rtype: int
     """
-    return self.seat_taken[row].index(False) 
+    seat_row = self.seat_taken[row]
+    return seat_row.index(False) if False in seat_row else -1
     
     
   def number_of_seats_in_row(self, row) -> int:
     """ 
     Returns number of seats in given row. 
     """
-    return self.get_lowest_seat_num(row) - self.get_highest_seat_num(row) + 1
+    return self.get_highest_seat_num(row) - self.get_lowest_seat_num(row) + 1
 
     
   def get_lowest_seat_num(self, row) -> int:
@@ -111,22 +112,42 @@ class Distributor:
     return sum([self.number_of_seats_in_row(r) for r in range(row)]) + seat
     
     
+  def find_starting_seat(self, ones, quantity = 1) -> (int, int):
+    """ 
+    Returns starting position of the seats to be assigned. 
     
-  def find_first_free_seat(self, init_row, ones, quantity = 1) -> (int, int):
-    """ Returns row and index """
+      :param int ones: Number of people with single tickets to be grouped together
+      :param int quantity: Number of seats together (next to each other)
+      :return: row index and first index of the seat in the row
+      :rtype: (int, int)
+    """
+    ones = 1 if quantity != 1 else ones
+    can_fit_row = []
+    
+    cur_row = 0
     first_free = self.first_free_seat_in_row(cur_row)
-    if quantity > 1:
-        # case when ticket more than one
-        while first_free > self.number_of_seats_in_row(cur_row) - ones:
-          cur_row += 1
-          first_free = self.first_free_seat_in_row(cur_row)
-          
-          if (cur_row == len(self.seat_row)):
-              cur_row = 0
-          if (cur_row == init_row):
-              if quantity >= self.number_of_seats_in_row(cur_row) - first_free:
-                  raise Exception("There is no more seats!")
+    found = False
+    
+    while not found:
+      if (first_free >= self.number_of_seats_in_row(cur_row) - ones) or first_free == -1:
+        cur_row += 1
+        first_free = self.first_free_seat_in_row(cur_row)
+        if first_free != -1 and first_free > self.number_of_seats_in_row(cur_row) - quantity:
+          # check that the quanitiy can fit and add it
+          can_fit_row.append((cur_row, first_free))
+      
+      if (cur_row == len(self.seat_row)):
+        found = True # it uses the can_fit_row
+        
+        if not can_fit_row:
+          raise Exception("There is no more seats!")
+        else:
+          (cur_row, first_free) = can_fit_row[0]
+      else:
+        found = True
+
     return (cur_row, first_free)
+    
     
   def create_pdf_ticket(self, row, first_free, customer):
     """
@@ -149,38 +170,19 @@ class Distributor:
     
       :param int ones: Number of people with single tickets to be grouped together
     """
-    cur_row = 0
     for customer in self.csv_reader:
       
-      init_row = cur_row
+      print(customer)
       quantity = int(customer[self.i_quantity])
-      
-      first_free = self.first_free_seat_in_row(cur_row)
-      # Refactor into its own function ----------
-      if quantity > 1:
-        # case when ticket more than one
-        while first_free > self.number_of_seats_in_row(cur_row) - ones:
-          cur_row += 1
-          first_free = self.first_free_seat_in_row(cur_row)
-          
-          if (cur_row == len(self.seat_row)):
-              cur_row = 0
-          if (cur_row == init_row):
-              if quantity >= self.number_of_seats_in_row(cur_row) - first_free:
-                  raise Exception("There is no more seats!")
-      # ---------------------------------------
+      (cur_row, first_free) = self.find_starting_seat(ones, quantity)
         
-      if quantity > 1:
-        for i in range(quantity):
-          self.create_pdf_ticket(cur_row, first_free, customer)
-          first_free += 1
+      print(self.seat_taken)
+      print(cur_row, first_free)
+      print()
+      for i in range(quantity):
+        self.create_pdf_ticket(cur_row, first_free, customer)
+        first_free += 1
         
-      else:
-        #  case when tickets is one
-        print("todo")
-        
-        
-           
            
 seat_row = ["P", "Q"]
 seat_range = [(16, 25), (17, 21)]
