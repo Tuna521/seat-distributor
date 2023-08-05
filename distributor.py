@@ -151,9 +151,14 @@ class Distributor:
     
   def create_pdf_ticket(self, row, first_free, customer):
     """
-    Creates the individual ticket for the given row, index, and name
+    Creates pdf for each individual ticket for the given row, index, and name, marking it as taken
+    
+      :param int row: Index of the row (according to seat_row)
+      :param int first_free: Index of the seat in the given row
+      :param int customer: Row of csv corresponding to the customer
     """
     
+    # TODO: if repeating name then add surname
     page_num = self.get_page_num(row, first_free)
           
     output = PdfWriter()
