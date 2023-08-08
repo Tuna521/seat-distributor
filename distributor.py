@@ -2,6 +2,9 @@ from PyPDF2 import PdfWriter, PdfReader
 from csv import reader
 from operator import itemgetter
 
+
+# TODO: add it all into a folder not just straight here 
+
 class Distributor:
   
   def __init__(self, seat_row, seat_range, path_to_tickets, path_to_csv, csv_delimiter=','):
@@ -177,13 +180,9 @@ class Distributor:
     """
     for customer in self.csv_reader:
       
-      print(customer)
       quantity = int(customer[self.i_quantity])
       (cur_row, first_free) = self.find_starting_seat(ones, quantity)
-        
-      print(self.seat_taken)
-      print(cur_row, first_free)
-      print()
+      
       for i in range(quantity):
         self.create_pdf_ticket(cur_row, first_free, customer)
         first_free += 1
