@@ -37,7 +37,8 @@ git clone https://github.com/Tuna521/seat-distributor.git
 2. In the folder drag the pdf of the tickets file (should be in order)
 
 3. Add the csv file with the csv information of the customers
-   Important: it need to contain column with "First Name" and "Quantity"
+
+Important: it need to contain column with "First Name" and "Quantity"
 
 4. Open `distributor.py`, scroll down to the end of file, and modify these lines accroding to your seat range (line 191-192)
 
